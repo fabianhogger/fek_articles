@@ -1,0 +1,23 @@
+---
+interface Props {
+  updated: string;
+}
+import { greekDate } from '../lib/fek';
+const { updated } = Astro.props;
+---
+<aside class="disclaimer" role="note">
+  <strong>Δεν είναι κωδικοποιημένο κείμενο νόμου.</strong>
+  Το ΦΕΚ δημοσιεύει κάθε πράξη όπως ψηφίστηκε. Το άρθρο περιγράφει τι ορίζουν οι πράξεις του
+  χρονολογίου, όπως ήταν γνωστές στις {greekDate(updated)}. Μεταγενέστερη πράξη μπορεί να τις έχει αλλάξει.
+</aside>
+
+<style>
+  .disclaimer {
+    background: var(--warn-bg);
+    border-left: 4px solid var(--warn-line);
+    padding: 10px 14px;
+    font-size: 0.9rem;
+    border-radius: 4px;
+    margin: 18px 0 8px;
+  }
+</style>

@@ -1,0 +1,11 @@
+---
+import Base from '../../layouts/Base.astro';
+import ArticleCard from '../../components/ArticleCard.astro';
+import { publishedArticles } from '../../lib/fek';
+const articles = await publishedArticles();
+---
+<Base title="Άρθρα">
+  <h1>Άρθρα</h1>
+  <p class="muted">{articles.length} άρθρα, με την πιο πρόσφατη ενημέρωση πρώτη.</p>
+  <ul class="card-list">{articles.map((a) => <ArticleCard article={a} />)}</ul>
+</Base>

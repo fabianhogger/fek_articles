@@ -1,0 +1,22 @@
+{
+  "name": "fek-site",
+  "private": true,
+  "type": "module",
+  "version": "0.1.0",
+  "description": "Articles and daily digests on the Greek Government Gazette (ΦΕΚ), written by the fek article engine",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build && pagefind --site dist",
+    "preview": "astro preview",
+    "check": "astro check"
+  },
+  "dependencies": {
+    "astro": "7.4.2"
+  },
+  "devDependencies": {
+    "pagefind": "1.5.2"
+  },
+  "engines": {
+    "node": ">=20.19.0"
+  }
+}

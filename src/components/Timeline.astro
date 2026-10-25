@@ -1,0 +1,84 @@
+---
+import { greekDate, KIND_LABELS } from '../lib/fek';
+interface Entry {
+  date: string;
+  fek: string;
+  label: string;
+  kind: string;
+  summary: string;
+  quote: string;
+  pdf: string;
+}
+interface Props {
+  entries: Entry[];
+}
+const entries = [...Astro.props.entries].sort((a, b) => a.date.localeCompare(b.date));
+const first = Date.parse(entries[0].date);
+const last = Date.parse(entries[entries.length - 1].date);
+const span = Math.max(last - first, 1);
+// Position on the strip; a single entry sits in the middle.
+const position = (iso: string) => (entries.length === 1 ? 50 : ((Date.parse(iso) - first) / span) * 100);
+---
+<section class="timeline" aria-labelledby="timeline-heading">
+  <h2 id="timeline-heading">Χρονολόγιο</h2>
+
+  {entries.length > 1 && (
+    <div class="strip" aria-hidden="true">
+      <div class="axis"></div>
+      {entries.map((e) => (
+        <a class={`dot kind-${e.kind}`} href={`#fek-${e.fek}`} style={`left: ${position(e.date)}%`} title={`${greekDate(e.date)} · ΦΕΚ ${e.label}`}></a>
+      ))}
+      <span class="end start">{greekDate(entries[0].date)}</span>
+      <span class="end finish">{greekDate(entries[entries.length - 1].date)}</span>
+    </div>
+  )}
+
+  <ol class="events">
+    {[...entries].reverse().map((e) => (
+      <li id={`fek-${e.fek}`} class={`kind-${e.kind}`}>
+        <p class="meta">
+          <time datetime={e.date}>{greekDate(e.date)}</time>
+          <span class="kind">{KIND_LABELS[e.kind] ?? e.kind}</span>
+          <a href={e.pdf} rel="noopener">ΦΕΚ {e.label}</a>
+        </p>
+        <p class="summary">{e.summary}</p>
+        {e.quote && <blockquote>«{e.quote}»</blockquote>}
+      </li>
+    ))}
+  </ol>
+</section>
+
+<style>
+  .strip { position: relative; height: 54px; margin: 8px 6px 18px; }
+  .axis { position: absolute; top: 12px; left: 0; right: 0; height: 2px; background: var(--line); }
+  .dot {
+    position: absolute; top: 5px; width: 16px; height: 16px; margin-left: -8px;
+    border-radius: 50%; border: 3px solid var(--surface); background: var(--kind-origin);
+    box-shadow: 0 0 0 1px var(--line);
+  }
+  .dot:hover { transform: scale(1.2); }
+  .end { position: absolute; top: 28px; font-size: 0.78rem; color: var(--muted); }
+  .start { left: 0; }
+  .finish { right: 0; }
+
+  .events { list-style: none; margin: 0; padding: 0 0 0 18px; border-left: 2px solid var(--line); }
+  .events li { position: relative; padding: 0 0 18px 14px; }
+  .events li::before {
+    content: ''; position: absolute; left: -26px; top: 7px; width: 12px; height: 12px;
+    border-radius: 50%; background: var(--kind-origin); border: 2px solid var(--bg);
+  }
+  .meta { margin: 0; display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 0.88rem; color: var(--muted); }
+  .kind { font-weight: 600; color: var(--kind-origin); }
+  .summary { margin: 4px 0 0; }
+  blockquote {
+    margin: 8px 0 0; padding: 6px 12px; border-left: 3px solid var(--line);
+    font-family: var(--serif); font-size: 0.95rem; color: var(--muted);
+  }
+
+  .kind-amends.dot, .kind-amends::before { background: var(--kind-amends); }
+  .kind-implements.dot, .kind-implements::before { background: var(--kind-implements); }
+  .kind-related.dot, .kind-related::before { background: var(--kind-related); }
+  .kind-amends .kind { color: var(--kind-amends); }
+  .kind-implements .kind { color: var(--kind-implements); }
+  .kind-related .kind { color: var(--kind-related); }
+</style>

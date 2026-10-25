@@ -1,0 +1,32 @@
+---
+import type { Article } from '../lib/fek';
+import { greekDate, topicSlug } from '../lib/fek';
+interface Props {
+  article: Article;
+}
+const { data } = Astro.props.article;
+const updates = data.timeline.length - 1;
+---
+<li class="card">
+  <p class="eyebrow">
+    {greekDate(data.updated)}
+    {updates > 0 && <span> · {updates} {updates === 1 ? 'ενημέρωση' : 'ενημερώσεις'}</span>}
+  </p>
+  <h3><a href={`/articles/${data.slug}/`}>{data.title}</a></h3>
+  <p class="summary">{data.summary}</p>
+  {data.topics.length > 0 && (
+    <p class="topics">
+      {data.topics.map((t) => <a class="chip" href={`/topics/${topicSlug(t)}/`}>{t}</a>)}
+    </p>
+  )}
+</li>
+
+<style>
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 16px 18px; }
+  h3 { margin: 2px 0 6px; font-size: 1.2rem; }
+  h3 a { color: var(--text); text-decoration: none; }
+  h3 a:hover { color: var(--accent); }
+  .summary { margin: 0; color: var(--muted); }
+  .topics { margin: 10px 0 0; display: flex; flex-wrap: wrap; gap: 6px; }
+  .eyebrow { margin: 0; }
+</style>

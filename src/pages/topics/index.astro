@@ -1,0 +1,19 @@
+---
+import Base from '../../layouts/Base.astro';
+import { publishedArticles, topicSlug } from '../../lib/fek';
+const counts = new Map<string, number>();
+for (const a of await publishedArticles()) {
+  for (const t of a.data.topics) counts.set(t, (counts.get(t) ?? 0) + 1);
+}
+const topics = [...counts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], 'el'));
+---
+<Base title="Θέματα">
+  <h1>Θέματα</h1>
+  <p class="list">
+    {topics.map(([t, n]) => <a class="chip" href={`/topics/${topicSlug(t)}/`}>{t} · {n}</a>)}
+  </p>
+</Base>
+
+<style>
+  .list { display: flex; flex-wrap: wrap; gap: 8px; }
+</style>

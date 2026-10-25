@@ -1,0 +1,22 @@
+---
+import Base from '../../layouts/Base.astro';
+import { digestDays, greekDate } from '../../lib/fek';
+const days = await digestDays();
+---
+<Base title="Καθημερινή σύνοψη">
+  <h1>Καθημερινή σύνοψη</h1>
+  <p class="muted">Μία γραμμή για κάθε πράξη της ημέρας που αξίζει προσοχή, ακόμη κι αν δεν έγινε άρθρο.</p>
+  <ul class="days">
+    {days.map((d) => (
+      <li>
+        <a href={`/digest/${d.data.date}/`}>{greekDate(d.data.date)}</a>
+        <span class="muted"> · {d.data.entries.length} πράξεις</span>
+      </li>
+    ))}
+  </ul>
+</Base>
+
+<style>
+  .days { list-style: none; padding: 0; }
+  .days li { padding: 9px 0; border-bottom: 1px solid var(--line); }
+</style>

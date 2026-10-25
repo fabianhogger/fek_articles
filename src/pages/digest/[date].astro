@@ -1,0 +1,34 @@
+---
+import Base from '../../layouts/Base.astro';
+import { digestDays, greekDate, type DigestDay } from '../../lib/fek';
+
+export async function getStaticPaths() {
+  const days = await digestDays();
+  return days.map((day) => ({ params: { date: day.data.date }, props: { day } }));
+}
+
+const { day } = Astro.props as { day: DigestDay };
+const { date, entries } = day.data;
+---
+<Base title={`Σύνοψη ${greekDate(date)}`}>
+  <p class="eyebrow"><a href="/digest/">Καθημερινή σύνοψη</a></p>
+  <h1>{greekDate(date)}</h1>
+  <ol class="entries" data-pagefind-body>
+    {entries.map((e) => (
+      <li>
+        <p class="line">{e.line}</p>
+        <p class="meta">
+          <a href={e.pdf} rel="noopener">ΦΕΚ {e.label}</a>
+          {e.article && <a href={`/articles/${e.article}/`}>{e.route === 'update' ? 'Ενημέρωση άρθρου →' : 'Άρθρο →'}</a>}
+        </p>
+      </li>
+    ))}
+  </ol>
+</Base>
+
+<style>
+  .entries { padding-left: 22px; max-width: 760px; }
+  .entries li { padding: 8px 0 10px; border-bottom: 1px solid var(--line); }
+  .line { margin: 0; }
+  .meta { margin: 4px 0 0; display: flex; gap: 16px; font-size: 0.88rem; }
+</style>

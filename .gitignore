@@ -1,0 +1,6 @@
+node_modules/
+dist/
+.astro/
+
+# Engine state written by a local seed run; it lives in S3, not in the site.
+.engine/

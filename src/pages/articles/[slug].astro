@@ -1,0 +1,53 @@
+---
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Disclaimer from '../../components/Disclaimer.astro';
+import Timeline from '../../components/Timeline.astro';
+import { publishedArticles, greekDate, topicSlug, type Article } from '../../lib/fek';
+
+export async function getStaticPaths() {
+  const articles = await publishedArticles();
+  return articles.map((article) => ({ params: { slug: article.data.slug }, props: { article } }));
+}
+
+const { article } = Astro.props as { article: Article };
+const { data } = article;
+const { Content } = await render(article);
+const origin = [...data.timeline].sort((a, b) => a.date.localeCompare(b.date))[0];
+---
+<Base title={data.title} description={data.summary}>
+  <article data-pagefind-body>
+    <p class="eyebrow">
+      ΦΕΚ {origin.label} · Ενημερώθηκε {greekDate(data.updated)}
+    </p>
+    <h1>{data.title}</h1>
+    <p class="summary">{data.summary}</p>
+    {data.topics.length > 0 && (
+      <p class="topics" data-pagefind-ignore>
+        {data.topics.map((t) => <a class="chip" href={`/topics/${topicSlug(t)}/`} data-pagefind-filter="θέμα">{t}</a>)}
+      </p>
+    )}
+    <Disclaimer updated={data.updated} />
+
+    <div class="body">
+      <Content />
+    </div>
+
+    <Timeline entries={data.timeline} />
+
+    <section class="sources" data-pagefind-ignore>
+      <h2>Πράξεις που παρακολουθεί το άρθρο</h2>
+      <p class="muted">Ένα νέο ΦΕΚ που παραπέμπει σε αυτές εξετάζεται ως ενημέρωση του άρθρου.</p>
+      <ul>{data.tracked_acts.map((act) => <li>{act}</li>)}</ul>
+    </section>
+  </article>
+</Base>
+
+<style>
+  article { max-width: 720px; }
+  .summary { font-size: 1.15rem; color: var(--muted); margin: 0 0 8px; }
+  .topics { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+  .body :global(h2) { font-size: 1.3rem; }
+  .body :global(p) { margin: 0 0 1em; }
+  .sources ul { padding-left: 20px; margin: 6px 0 0; }
+</style>

@@ -1,0 +1,138 @@
+---
+interface Props {
+  title: string;
+  description?: string;
+}
+const { title, description = 'Τι αλλάζει στην πράξη με κάθε ΦΕΚ — άρθρα με χρονολόγιο και καθημερινή σύνοψη.' } = Astro.props;
+const fullTitle = title === 'ΦΕΚ σε απλά λόγια' ? title : `${title} · ΦΕΚ σε απλά λόγια`;
+const path = Astro.url.pathname;
+const nav = [
+  { href: '/articles/', label: 'Άρθρα' },
+  { href: '/digest/', label: 'Σύνοψη' },
+  { href: '/topics/', label: 'Θέματα' },
+  { href: '/search/', label: 'Αναζήτηση' },
+];
+---
+<!doctype html>
+<html lang="el">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="canonical" href={new URL(path, Astro.site)} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="wrap header-row">
+        <a class="brand" href="/">ΦΕΚ <span>σε απλά λόγια</span></a>
+        <nav aria-label="Κύρια πλοήγηση">
+          {nav.map((item) => (
+            <a href={item.href} aria-current={path.startsWith(item.href) ? 'page' : undefined}>{item.label}</a>
+          ))}
+        </nav>
+      </div>
+    </header>
+    <main class="wrap">
+      <slot />
+    </main>
+    <footer class="site-footer">
+      <div class="wrap">
+        <p>
+          Τα κείμενα γράφονται αυτόματα από τα δημοσιευμένα ΦΕΚ και ελέγχονται πριν δημοσιευτούν. Κάθε
+          παραπομπή οδηγεί στο επίσημο PDF του Εθνικού Τυπογραφείου. Δεν αποτελούν νομική συμβουλή και
+          δεν είναι κωδικοποιημένο κείμενο νόμου.
+        </p>
+        <p>Δεν συνδέεται με το Εθνικό Τυπογραφείο.</p>
+      </div>
+    </footer>
+  </body>
+</html>
+
+<style is:global>
+  :root {
+    --bg: #fbfaf7;
+    --surface: #ffffff;
+    --text: #1c1d1f;
+    --muted: #5d6168;
+    --line: #e3e0d8;
+    --accent: #1d3a5f;
+    --accent-soft: #e6edf5;
+    --warn-bg: #fff6e0;
+    --warn-line: #e9c46a;
+    --kind-origin: #1d3a5f;
+    --kind-amends: #b5462f;
+    --kind-implements: #2e7d5b;
+    --kind-related: #7a6a9a;
+    --serif: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
+    --sans: system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', sans-serif;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme='light']) {
+      --bg: #141518;
+      --surface: #1c1e22;
+      --text: #e8e6e1;
+      --muted: #a2a6ad;
+      --line: #2e3137;
+      --accent: #8fb4e0;
+      --accent-soft: #1f2a38;
+      --warn-bg: #2b2516;
+      --warn-line: #8a7230;
+      --kind-origin: #8fb4e0;
+      --kind-amends: #e58b74;
+      --kind-implements: #6cc59b;
+      --kind-related: #b4a6d6;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme='dark'] {
+    --bg: #141518;
+    --surface: #1c1e22;
+    --text: #e8e6e1;
+    --muted: #a2a6ad;
+    --line: #2e3137;
+    --accent: #8fb4e0;
+    --accent-soft: #1f2a38;
+    --warn-bg: #2b2516;
+    --warn-line: #8a7230;
+    --kind-origin: #8fb4e0;
+    --kind-amends: #e58b74;
+    --kind-implements: #6cc59b;
+    --kind-related: #b4a6d6;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 17px/1.65 var(--sans);
+  }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 0 16px; }
+  a { color: var(--accent); text-underline-offset: 2px; }
+  h1, h2, h3 { font-family: var(--serif); line-height: 1.25; font-weight: 700; }
+  h1 { font-size: clamp(1.7rem, 4vw, 2.4rem); margin: 0.2em 0 0.4em; }
+  h2 { font-size: 1.35rem; margin: 1.8em 0 0.5em; }
+  .muted { color: var(--muted); }
+  .eyebrow { font-size: 0.8rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+
+  .site-header { border-bottom: 1px solid var(--line); background: var(--surface); }
+  .header-row { display: flex; flex-wrap: wrap; gap: 8px 24px; align-items: center; justify-content: space-between; padding-top: 14px; padding-bottom: 14px; }
+  .brand { font-family: var(--serif); font-weight: 700; font-size: 1.25rem; color: var(--text); text-decoration: none; }
+  .brand span { color: var(--muted); font-weight: 400; }
+  nav { display: flex; flex-wrap: wrap; gap: 4px 18px; }
+  nav a { color: var(--muted); text-decoration: none; font-size: 0.95rem; }
+  nav a:hover, nav a[aria-current='page'] { color: var(--accent); }
+
+  main { padding-top: 28px; padding-bottom: 56px; min-height: 60vh; }
+  .site-footer { border-top: 1px solid var(--line); color: var(--muted); font-size: 0.85rem; padding: 20px 0 36px; }
+
+  .card-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 14px; }
+  .chip { display: inline-block; font-size: 0.78rem; padding: 1px 9px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); text-decoration: none; }
+</style>

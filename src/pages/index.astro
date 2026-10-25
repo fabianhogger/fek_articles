@@ -1,0 +1,56 @@
+---
+import Base from '../layouts/Base.astro';
+import ArticleCard from '../components/ArticleCard.astro';
+import { publishedArticles, digestDays, greekDate } from '../lib/fek';
+
+const articles = (await publishedArticles()).slice(0, 12);
+const days = (await digestDays()).slice(0, 5);
+---
+<Base title="ΦΕΚ σε απλά λόγια">
+  <section class="lede">
+    <h1>Τι αλλάζει στην πράξη με κάθε ΦΕΚ</h1>
+    <p class="muted">
+      Κάθε βράδυ διαβάζουμε όσα δημοσιεύτηκαν στην Εφημερίδα της Κυβερνήσεως. Τα σημαντικά γίνονται
+      άρθρα με δικό τους χρονολόγιο· όταν ένα νεότερο ΦΕΚ τα αλλάζει, το άρθρο ενημερώνεται.
+    </p>
+  </section>
+
+  <div class="grid">
+    <section>
+      <h2>Πρόσφατα άρθρα</h2>
+      {articles.length === 0 ? (
+        <p class="muted">Δεν υπάρχουν ακόμη άρθρα.</p>
+      ) : (
+        <ul class="card-list">{articles.map((a) => <ArticleCard article={a} />)}</ul>
+      )}
+      <p><a href="/articles/">Όλα τα άρθρα →</a></p>
+    </section>
+
+    <aside>
+      <h2>Καθημερινή σύνοψη</h2>
+      {days.length === 0 ? (
+        <p class="muted">Καμία σύνοψη ακόμη.</p>
+      ) : (
+        <ul class="days">
+          {days.map((d) => (
+            <li>
+              <a href={`/digest/${d.data.date}/`}>{greekDate(d.data.date)}</a>
+              <span class="muted"> · {d.data.entries.length} πράξεις</span>
+              {d.data.entries[0] && <p class="top">{d.data.entries[0].line}</p>}
+            </li>
+          ))}
+        </ul>
+      )}
+    </aside>
+  </div>
+</Base>
+
+<style>
+  .lede { max-width: 720px; }
+  .lede p { font-size: 1.08rem; }
+  .grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px 40px; }
+  @media (min-width: 860px) { .grid { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); } }
+  .days { list-style: none; padding: 0; margin: 0; }
+  .days li { padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .top { margin: 4px 0 0; font-size: 0.9rem; color: var(--muted); }
+</style>
